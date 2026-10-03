@@ -14,8 +14,8 @@ g.CONFIG["TELEGRAM_CHAT_ID"] = os.environ.get("TELEGRAM_CHAT_ID", "")
 MAX_AGE_MIN = 14  # แจ้งเฉพาะแท่งที่เพิ่งปิดไม่เกิน 14 นาที กันสัญญาณเก่าซ้ำ / ตอนตลาดปิด
 
 now = dt.datetime.utcnow()
-if True:  # ชั่วคราวสำหรับทดสอบ
-    g.notify("ทดสอบจาก GitHub: ระบบสแกนทองส่งข้อความได้ ✅")
+if now.hour == 0 and now.minute < 15:  # ราว 07:00 น. เวลาไทย วันละครั้ง
+    g.notify("ระบบสแกนทองยังทำงานอยู่ ✅")
 d = g.add_indicators(g.get_data())
 d = d[d.index + pd.Timedelta(minutes=15) <= now]  # ตัดแท่งที่ยังไม่ปิด
 t = d.index[-1]
