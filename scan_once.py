@@ -11,11 +11,12 @@ import gold_signal as g
 g.CONFIG["TELEGRAM_TOKEN"] = os.environ.get("TELEGRAM_TOKEN", "")
 g.CONFIG["TELEGRAM_CHAT_ID"] = os.environ.get("TELEGRAM_CHAT_ID", "")
 
-MAX_AGE_MIN = 14  # แจ้งเฉพาะแท่งที่เพิ่งปิดไม่เกิน 14 นาที กันสัญญาณเก่าซ้ำ / ตอนตลาดปิด
+MAX_AGE_MIN = 29  # ยอมรับข้อมูลที่ปิดไม่เกิน 29 นาที (เผื่อ Yahoo ดีเลย์) ถ้าได้สัญญาณซ้ำให้ดูเวลาแท่ง
 
 now = dt.datetime.utcnow()
 if now.hour == 0 and now.minute < 15:  # ราว 07:00 น. เวลาไทย วันละครั้ง
     g.notify("ระบบสแกนทองยังทำงานอยู่ ✅")
+
 d = g.add_indicators(g.get_data())
 d = d[d.index + pd.Timedelta(minutes=15) <= now]  # ตัดแท่งที่ยังไม่ปิด
 t = d.index[-1]
@@ -28,7 +29,7 @@ if age > MAX_AGE_MIN:
 sig, votes = g.compute_signals(d)
 s = sig.iloc[-1]
 if s == 0:
-    print(f"[{t:%H:%M} UTC] ยังไม่มีสัญญาณ")
+    print(f"[{t:%H:%M} UTC] ยังไม่มีสัญญาณ | อายุข้อมูล {age:.0f} นาที | โหวต {votes.iloc[-1].to_dict()}")
     raise SystemExit
 
 names = [n for n in votes.columns if votes[n].iloc[-1] == s]
